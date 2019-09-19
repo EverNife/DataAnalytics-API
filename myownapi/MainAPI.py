@@ -100,7 +100,7 @@ class MainAPI:
 
     dfDeAtributosPrecisao = None;   #DataFrame de atributos de Precisão (Atributos que irão balisar a regressão Linear)
     dfDeAtributoDesejado = None;    #DataFrame de atributos de Precisão (Atributos que irão balisar a regressão Linear)
-    porcentagem_treino = 0.25;      #Porcentagem dos dados que será usada para treinar a regressão linear
+    porcentagem_teste = 0.25;       #Porcentagem dos dados que será usada para treinar a regressão linear
     erro_quadratico = 0;            #Qual o erro quadrático resultante da regressão linear (quanto menor melhor)
     r_square = 0;                   #Qual o RSquare (Coeficiente de Determinação) da regressão Linear, varia entre 0 e 1, quanto maior melhor (% de explicação dos dados de saida com base nos dados de entrada)
 
@@ -123,10 +123,10 @@ class MainAPI:
 
 
     @staticmethod
-    def lregDefinirPorcentagemDeTreino(novaPorcentagem):
-        MainAPI.porcentagem_treino = novaPorcentagem;
+    def lregDefinirPorcentagemDeTeste(novaPorcentagem):
+        MainAPI.porcentagem_teste = novaPorcentagem;
         porcentagem_de_teste = 100 - novaPorcentagem;
-        MainAPI.info("Porcentagem de Treino definido para: " + str(MainAPI.porcentagem_treino) + "%")
+        MainAPI.info("Porcentagem de Treino definido para: " + str(MainAPI.porcentagem_teste) + "%")
         MainAPI.info("Porcentagem de Teste definido para: " + str(porcentagem_de_teste)  + "%" )
 
 
@@ -140,7 +140,7 @@ class MainAPI:
 
     @staticmethod
     def lregAplicarRegressaoLinear():
-        MainAPI.x_train, MainAPI.x_test, MainAPI.y_train, MainAPI.y_test = train_test_split(MainAPI.dfDeAtributosPrecisao, MainAPI.dfDeAtributoDesejado, train_size=(MainAPI.porcentagem_treino / 100));
+        MainAPI.x_train, MainAPI.x_test, MainAPI.y_train, MainAPI.y_test = train_test_split(MainAPI.dfDeAtributosPrecisao, MainAPI.dfDeAtributoDesejado, test_size=(MainAPI.porcentagem_teste / 100));
 
         MainAPI.info("Iniciando regressão Linear!")
         MainAPI.lreg = LinearRegression()                       #Instanciando um novo objeto [sklearn.linear_model]
