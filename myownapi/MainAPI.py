@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 from pandas import Series, DataFrame
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
+from django.core.validators import URLValidator
+
 
 class MainAPI:
 
@@ -39,19 +41,36 @@ class MainAPI:
         if (MainAPI.info):
             print(text);
 
+    @staticmethod
+    def is_url(url_name):
+        try:
+            URLValidator()(url_name)
+            return True;
+        except:
+            return False;
+
     #---------------------------------------------------------------------------
     #   Panda
     # ---------------------------------------------------------------------------
     df = None;          #DataFrame
 
     @staticmethod
+    def setDataframe(newDataFrame):
+        MainAPI.df = newDataFrame;
+
+    @staticmethod
     def read_csv(filePath):
         MainAPI.info("Iniciando leitura do arquivo:\n --> " + filePath);
         MainAPI.df = pd.read_csv(filePath);
-
         MainAPI.info("Arquivo lido com sucesso!");
         return MainAPI.df;
 
+    @staticmethod
+    def read_xls(filePath):
+        MainAPI.info("Iniciando leitura do arquivo:\n --> " + filePath);
+        MainAPI.df = pd.read_excel(filePath);
+        MainAPI.info("Arquivo lido com sucesso!");
+        return MainAPI.df;
 
     #   Verifica se o DataFrame possui valores nulos, se tiver,
     #     cria uma cópia do dataset, dropa as variáveis nulas
@@ -93,6 +112,14 @@ class MainAPI:
         plt.subplot(311)
 
         return sns.distplot(MainAPI.df[nomeDoAtributo]);
+
+    @staticmethod
+    def autoCorrelacao(nomeDoAtributo = None):             #Plotar Gráfico de AutoCorrelação
+        from pandas.plotting import autocorrelation_plot;
+        if nomeDoAtributo != None:
+            return autocorrelation_plot(MainAPI.df[nomeDoAtributo]);
+        else:
+            return autocorrelation_plot(MainAPI.df);
 
     # ---------------------------------------------------------------------------
     #   Linear Regression
