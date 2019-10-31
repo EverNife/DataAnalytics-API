@@ -121,6 +121,10 @@ class MainAPI:
         else:
             return autocorrelation_plot(MainAPI.df);
 
+    @staticmethod
+    def pegarDataframeCondicionalmente(nomeDoAtributo, conteudoDoAtributo):             #Plotar Gráfico de AutoCorrelação
+        return MainAPI.df.loc[MainAPI.df[nomeDoAtributo] == conteudoDoAtributo];
+
     # ---------------------------------------------------------------------------
     #   Linear Regression
     # ---------------------------------------------------------------------------
