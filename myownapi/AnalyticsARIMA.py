@@ -35,17 +35,20 @@ class AnalyticsARIMA(MainAPI):
         self.df = self.df.set_index(nomeDaColunaDeDatas)
 
     #Atenção, o dataFrame precisa estar AGRUPADO e ORDENADO
-    def plotarDecomposicao(self, dataFrame=None, theModel='addtive', theFigsize = None):
+    def plotarDecomposicao(self, dataFrame=None, theModel='addtive', theFigsize = None, theFreq = None):
         from pylab import rcParams;
         import statsmodels.api as sm;
         rcParams['figure.figsize'] = 18, 8;
 
-        if dataFrame == None:
+        if dataFrame is None:
             dataFrame = self.df;
 
         # Dois tipos de modelos possíves, Aditivo e Multiplicativo (Necessário testar as diferenças)
-        decomposicao = sm.tsa.seasonal_decompose(dataFrame, model=theModel);
-        if theFigsize != None:
+        if theFreq is not None:
+            decomposicao = sm.tsa.seasonal_decompose(dataFrame, model=theModel, freq=theFreq);
+        else:
+            decomposicao = sm.tsa.seasonal_decompose(dataFrame, model=theModel);
+        if theFigsize is not None:
             plt.figure(figsize=theFigsize)
         return decomposicao.plot();
 
