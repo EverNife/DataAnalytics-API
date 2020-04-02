@@ -66,7 +66,7 @@ class MainAPI:
     # ---------------------------------------------------------------------------
     #   Panda
     # ---------------------------------------------------------------------------
-    df = None;  # DataFrame
+    df : DataFrame= None;  # DataFrame
 
     def setDataframe(self, newDataFrame):
         self.df = newDataFrame;
@@ -179,6 +179,9 @@ class MainAPI:
 
     def head(self,amount):
         return self.df.head(amount)
+
+    def getColumnsNames(self):
+        return self.df.columns;
 
 
     # ---------------------------------------------------------------------------

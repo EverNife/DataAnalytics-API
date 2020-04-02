@@ -7,6 +7,7 @@ from pandas import Series, DataFrame
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from django.core.validators import URLValidator
+from statsmodels.tsa.statespace.mlemodel import MLEResults, PredictionResultsWrapper
 
 from myownapi.MainAPI import MainAPI
 
@@ -22,7 +23,7 @@ class AnalyticsARIMA(MainAPI):
     #   Arima
     # ---------------------------------------------------------------------------
 
-    modelFit = None;
+    modelFit:MLEResults = None;
     nomeDaColunaObjetivo = None;
     nomeDaColunaDeDatas = None;
 
@@ -98,7 +99,7 @@ class AnalyticsARIMA(MainAPI):
                                                     enforce_stationarity=False,
                                                     enforce_invertibility=False)
 
-                    resultado = mod.fit()
+                    resultado = mod.fit(disp=0)#disp == 0 Oculta log indesejado que trava o programa....
 
                     if resultado.aic < menorCombinacaoValor:
                         menorCombinacao = [parametro, parametro_sasonal, ARIMA_SASONALIDADE];
@@ -130,7 +131,7 @@ class AnalyticsARIMA(MainAPI):
                                         enforce_stationarity=False,
                                         enforce_invertibility=False)
 
-        self.modelFit = mod.fit()
+        self.modelFit = mod.fit(disp=0)#disp == 0 Oculta log indesejado que trava o programa....
         print('\n\n');
         print(self.modelFit.summary().tables[1])
 
@@ -152,6 +153,7 @@ class AnalyticsARIMA(MainAPI):
 
         ax = self.df[datasetStartDate:].plot(label='Observado')
         pred.predicted_mean.plot(ax=ax, label='Predicted', alpha=.7, figsize=theFigsize)
+
 
         ax.fill_between(pred_ci.index,
                         pred_ci.iloc[:, 0],
@@ -186,6 +188,17 @@ class AnalyticsARIMA(MainAPI):
         plt.legend()
         plt.show()
 
+    def ARIMAForecastToJson(self, setps, datasetStartDate = None, theFigsize = (14, 7), verbose = False):
+
+        if datasetStartDate == None:
+            datasetStartDate = self.df.index[0];
+
+        pred:PredictionResultsWrapper = self.modelFit.get_forecast(steps=setps)
+
+        if verbose is True:
+            print(pred.predicted_mean)
+
+        return pred.predicted_mean.to_json();
 
 
 
