@@ -27,11 +27,15 @@ class AnalyticsARIMA(MainAPI):
     nomeDaColunaObjetivo = None;
     nomeDaColunaDeDatas = None;
 
-    def arimaDefinirColunaObjetivo(self, nomeDaColunaObjetivo, nomeDaColunaDeDatas):
+    def arimaDefinirColunaObjetivo(self, nomeDaColunaObjetivo, nomeDaColunaDeDatas, funcaoDeConversaDeDatas=None):
         self.nomeDaColunaObjetivo = nomeDaColunaObjetivo;
         self.nomeDaColunaDeDatas = nomeDaColunaDeDatas;
 
-        self.df[nomeDaColunaDeDatas] = pd.to_datetime(self.df[nomeDaColunaDeDatas])
+        if funcaoDeConversaDeDatas is not None:
+            self.df[nomeDaColunaDeDatas] = self.df[nomeDaColunaDeDatas].apply(funcaoDeConversaDeDatas);
+        else:
+            self.df[nomeDaColunaDeDatas] = pd.to_datetime(self.df[nomeDaColunaDeDatas])
+
         self.df = self.df.groupby(nomeDaColunaDeDatas)[nomeDaColunaObjetivo].sum().reset_index()
         self.df = self.df.set_index(nomeDaColunaDeDatas)
 
@@ -51,7 +55,7 @@ class AnalyticsARIMA(MainAPI):
             decomposicao = sm.tsa.seasonal_decompose(dataFrame, model=theModel);
         if theFigsize is not None:
             plt.figure(figsize=theFigsize)
-        return decomposicao.plot();
+        decomposicao.plot();
 
 
     # ARIMA_SASONALIDADE == 12 meses, no caso, 1 ano;
@@ -164,12 +168,12 @@ class AnalyticsARIMA(MainAPI):
         plt.legend()
         plt.show()
 
-    def ARIMAForecast(self, setps, datasetStartDate = None, theFigsize = (14, 7), verbose = False):
+    def ARIMAForecast(self, steps, datasetStartDate = None, theFigsize = (14, 7), verbose = False):
 
         if datasetStartDate == None:
             datasetStartDate = self.df.index[0];
 
-        pred_uc = self.modelFit.get_forecast(steps=setps)
+        pred_uc = self.modelFit.get_forecast(steps=steps)
 
         if verbose is True:
             print(pred_uc.predicted_mean)
@@ -188,12 +192,36 @@ class AnalyticsARIMA(MainAPI):
         plt.legend()
         plt.show()
 
-    def ARIMAForecastToJson(self, setps, datasetStartDate = None, theFigsize = (14, 7), verbose = False):
+    def ARIMAPredictionToPred(self, forecastStartingDate = None ,datasetStartDate = None, theFigsize = (14, 7)):
 
         if datasetStartDate == None:
             datasetStartDate = self.df.index[0];
 
-        pred:PredictionResultsWrapper = self.modelFit.get_forecast(steps=setps)
+        if forecastStartingDate == None:
+            forecastStartingDate = self.df.index[0];
+
+        # Predição propriamente dita
+        pred = self.modelFit.get_prediction(start=pd.to_datetime(forecastStartingDate), dynamic=False)
+        return pred;
+
+    def ARIMAForecastToPred(self, steps, datasetStartDate = None, theFigsize = (14, 7), verbose = False):
+
+        if datasetStartDate == None:
+            datasetStartDate = self.df.index[0];
+
+        pred:PredictionResultsWrapper = self.modelFit.get_forecast(steps=steps)
+
+        if verbose is True:
+            print(pred.predicted_mean)
+
+        return pred;
+
+    def ARIMAForecastToJson(self, steps, datasetStartDate = None, theFigsize = (14, 7), verbose = False):
+
+        if datasetStartDate == None:
+            datasetStartDate = self.df.index[0];
+
+        pred:PredictionResultsWrapper = self.modelFit.get_forecast(steps=steps)
 
         if verbose is True:
             print(pred.predicted_mean)

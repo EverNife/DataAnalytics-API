@@ -1,15 +1,28 @@
-
+#!/usr/bin/python
 # Esse arquivo irá extrair os dados
-# de uma aplicação MYSQL e ira processar
-# as análises e retornar o resultado.
+# de uma aplicação MYSQL genérica, ira processar
+# as análises os dados, e retornar o resultado em uma pasta especificada
+
+import sys
+
+len(sys.argv)
+
+print('<br>Number of arguments:', len(sys.argv), 'arguments.')
+print('<br>Argument List:', str(sys.argv), 'arguments.')
+
+if (len(sys.argv) < 6):
+  print('<br>Faltando parametros!')
+  exit();
+
+scriptPath = sys.argv[0];
+hostName = sys.argv[1];
+userName = sys.argv[2];
+thePassword = sys.argv[3];
+databaseName = sys.argv[4];
+userUserName = sys.argv[5];
 
 import mysql.connector
 from mysql.connector import MySQLConnection
-
-hostName = "localhost";
-userName = "admin";
-thePassword = "admin";
-databaseName = "analytics";
 
 print("\nIniciando conexão com o banco de dados:");
 print(" Host: " + hostName);
@@ -85,11 +98,21 @@ json_origin = analytics.df.to_json();#http://pandas-docs.github.io/pandas-docs-t
 dump_out          = json.dumps(json.loads(original_df.to_json(orient='records'))); #Ensure formatting by double doing the same things!
 dump_out_predict  = json.dumps(new_json);
 
-print(dump_out);
-print(dump_out_predict);
+#print(dump_out);
+#print(dump_out_predict);
 
-import sys
-# calculate stuff
-sys.stdout.write(dump_out_predict)
-sys.stdout.flush()
-sys.exit(0)
+import os
+import time
+milliseconds = int(round(time.time() * 1000))
+
+fileName = "data" + os.path.sep + str(userUserName) + os.path.sep + "arima_export_" + str(milliseconds);
+
+print("Dumping data in " + fileName + "_data.json");
+f = open(fileName + "_data.json", "a")
+f.write(dump_out)
+f.close()
+
+print("Dumping predict in " + fileName + "_predict.json");
+f = open(fileName + "_predict.json", "a")
+f.write(dump_out_predict)
+f.close()
