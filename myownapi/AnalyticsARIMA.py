@@ -1,22 +1,11 @@
-import time
-import numpy as np
 import pandas as pd
-import seaborn as sns
 import matplotlib.pyplot as plt
-from pandas import Series, DataFrame
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from django.core.validators import URLValidator
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 from statsmodels.tsa.statespace.mlemodel import MLEResults, PredictionResultsWrapper
 
 from myownapi.MainAPI import MainAPI
 
 class AnalyticsARIMA(MainAPI):
-
-    # ---------------------------------------------------------------------------
-    #   DataFrame
-    # ---------------------------------------------------------------------------
-
 
 
     # ---------------------------------------------------------------------------
@@ -26,6 +15,7 @@ class AnalyticsARIMA(MainAPI):
     modelFit:MLEResults = None;
     nomeDaColunaObjetivo = None;
     nomeDaColunaDeDatas = None;
+
 
     def arimaDefinirColunaObjetivo(self, nomeDaColunaObjetivo, nomeDaColunaDeDatas, funcaoDeConversaDeDatas=None):
         self.nomeDaColunaObjetivo = nomeDaColunaObjetivo;
@@ -58,7 +48,7 @@ class AnalyticsARIMA(MainAPI):
         decomposicao.plot();
 
 
-    # ARIMA_SASONALIDADE == 12 meses, no caso, 1 ano;
+    #ARIMA_SASONALIDADE == 12 meses, no caso, 1 ano;
     def aplicarARIMA(self, ARIMA_SASONALIDADE = 12, verbose = False):
 
         if verbose:
@@ -118,7 +108,7 @@ class AnalyticsARIMA(MainAPI):
 
         if verbose == True:
             print('\n\n')
-            print('O menor valor encontrado par ao AIC é: {}'.format(menorCombinacaoValor))
+            print('O menor valor encontrado para o AIC é: {}'.format(menorCombinacaoValor))
             print('Utilizando a combinação: ARIMA{}x{}x{}'.format(menorCombinacao[0], menorCombinacao[1], menorCombinacao[2]))
 
         theOrder = menorCombinacao[0];
@@ -136,8 +126,9 @@ class AnalyticsARIMA(MainAPI):
                                         enforce_invertibility=False)
 
         self.modelFit = mod.fit(disp=0)#disp == 0 Oculta log indesejado que trava o programa....
-        print('\n\n');
-        print(self.modelFit.summary().tables[1])
+        if verbose == True:
+            print('\n\n');
+            print(self.modelFit.summary().tables[1])
 
     def diagnostico(self):
         self.modelFit.plot_diagnostics(figsize=(15, 12))
@@ -227,6 +218,7 @@ class AnalyticsARIMA(MainAPI):
             print(pred.predicted_mean)
 
         return pred.predicted_mean.to_json();
+
 
 
 

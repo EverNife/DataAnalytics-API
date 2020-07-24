@@ -5,7 +5,6 @@
 from myownapi.AnalyticsARIMA import AnalyticsARIMA;
 
 analytics = AnalyticsARIMA();
-
 dataset_file = "C:/Users/Petrus/Desktop/UNESP/Docs 2016-2020/2019/Segundo Semestre/TCC2/TCC BigData Analytics/Treino11/shampoo.csv";
 
 analytics.read_csv(dataset_file);

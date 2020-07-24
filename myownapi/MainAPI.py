@@ -3,9 +3,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from pandas import Series, DataFrame
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
+from pandas import DataFrame
 from django.core.validators import URLValidator
 from sklearn import preprocessing
 

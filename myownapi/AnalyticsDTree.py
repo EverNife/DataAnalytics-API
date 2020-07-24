@@ -36,8 +36,7 @@ class AnalyticsDTree(MainAPI):
         warnings.filterwarnings("ignore",
                                 message="From version 0.21, test_size will always complement train_size unless both are specified.")
         self.info("Definindo atributo desejado para: " + atributoDesejado)
-        self.dfDeAtributoDesejado = self.df[
-            atributoDesejado];  # Criando um dataFrame Auxiliar com a linha de coluna do atributo desejado
+        self.dfDeAtributoDesejado = self.df[atributoDesejado];  # Criando um dataFrame Auxiliar com a linha de coluna do atributo desejado
 
     def definirPorcentagemDeTeste(self, novaPorcentagem):
         self.porcentagem_teste = novaPorcentagem;
